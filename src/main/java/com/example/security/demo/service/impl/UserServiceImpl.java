@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void updateUser(Long id, UserDto dto) {
+  public void updateUser(Long id, UserDto dto) throws UserNotFoundException {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException(String.format("User not found with id:%s", id)));
     userMapper.updateUser(user, dto);
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void deleteUser(Long id) {
+  public void deleteUser(Long id) throws UserNotFoundException {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException(String.format("User not found with id:%s", id)));
     user.setEnabled(false);

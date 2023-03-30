@@ -1,46 +1,44 @@
 package com.example.security.demo.controller;
 
 import com.example.security.demo.dto.UserDto;
-import com.example.security.demo.entity.User;
-import com.example.security.demo.mapper.UserMapper;
-import com.example.security.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.example.security.demo.exception.UserNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-@RestController
-@RequestMapping("/user")
-public class UserController {
+@Tag(name = "user", description = "the user api")
+@SecurityRequirement(name = "JWT")
+public interface UserController {
 
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private UserMapper userMapper;
+  @Operation(summary = "Get user", description = "Get user information", tags = {"user"})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "successful operation", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
+      })
+  })
+  UserDto getUser(Authentication authentication);
 
-  @GetMapping
-  public UserDto me(Authentication authentication) {
-    return userMapper.toDto((User) authentication.getPrincipal());
-  }
+  @Operation(summary = "Patch user", description = "Update user information", tags = {"user"})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "successful operation"),
+      @ApiResponse(responseCode = "400", description = "Bad Request")
+  })
+  void patchUser(@Parameter(description = "Id of user") @PathVariable Long id, @RequestBody @Valid UserDto dto, Authentication authentication) throws UserNotFoundException;
 
-  @PatchMapping("/{id}")
-  @PreAuthorize("#id==#authentication.principal.id")
-  public void patchUser(@PathVariable Long id, @RequestBody @Valid UserDto dto, Authentication authentication) {
-    userService.updateUser(id, dto);
-  }
-
-  @DeleteMapping("/{id}")
-  @PreAuthorize("#id==#authentication.principal.id")
-  public void deleteUser(@PathVariable Long id, Authentication authentication) {
-    userService.deleteUser(id);
-  }
+  @Operation(summary = "Delete user", description = "Delete user", tags = {"user"})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "successful operation")
+  })
+  void deleteUser(@Parameter(description = "Id of user") @PathVariable Long id, Authentication authentication) throws UserNotFoundException;
 
 }
