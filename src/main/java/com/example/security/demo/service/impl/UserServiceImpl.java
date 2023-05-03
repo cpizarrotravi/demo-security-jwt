@@ -1,7 +1,7 @@
 package com.example.security.demo.service.impl;
 
 import com.example.security.demo.dto.UserDto;
-import com.example.security.demo.entity.User;
+import com.example.security.demo.entity.UserApp;
 import com.example.security.demo.exception.UserNotFoundException;
 import com.example.security.demo.mapper.UserMapper;
 import com.example.security.demo.repository.UserRepository;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void createUser(UserDto dto) {
-    User user = userMapper.toEntity(dto);
+    UserApp user = userMapper.toEntity(dto);
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
     userRepository.save(user);
   }
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void updateUser(Long id, UserDto dto) throws UserNotFoundException {
-    User user = userRepository.findById(id)
+    UserApp user = userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException(String.format("User not found with id:%s", id)));
     userMapper.updateUser(user, dto);
     userRepository.save(user);
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void deleteUser(Long id) throws UserNotFoundException {
-    User user = userRepository.findById(id)
+    UserApp user = userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException(String.format("User not found with id:%s", id)));
     user.setEnabled(false);
     userRepository.save(user);

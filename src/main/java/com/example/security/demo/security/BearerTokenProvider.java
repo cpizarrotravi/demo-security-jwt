@@ -1,6 +1,5 @@
 package com.example.security.demo.security;
 
-import com.example.security.demo.entity.User;
 import com.example.security.demo.util.DateUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -13,6 +12,7 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -30,10 +30,9 @@ public class BearerTokenProvider {
   private String expiration;
 
   public String generateToken(Authentication authentication) {
-    User user = (User) authentication.getPrincipal();
+    UserDetails user = (UserDetails) authentication.getPrincipal();
     LocalDateTime now = LocalDateTime.now();
     return Jwts.builder()
-        .setSubject(Long.toString(user.getId()))
         .setIssuer(user.getUsername())
         .setIssuedAt(DateUtil.toDate(now))
         .setExpiration(DateUtil.toDate(now.plus(Long.parseLong(expiration), ChronoUnit.MILLIS)))

@@ -1,8 +1,11 @@
 package com.example.security.demo.service.impl;
 
+import com.example.security.demo.entity.UserApp;
 import com.example.security.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,8 +22,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return userRepository.findByUsernameOrEmail(username, username)
+    UserApp user = userRepository.findByUsernameOrEmail(username, username)
         .orElseThrow(() -> new UsernameNotFoundException(String.format("User not found with username or email: %s", username)));
+    return getUserDetails(user);
+  }
+
+  private UserDetails getUserDetails(UserApp user) {
+    return User.builder()
+        .username(user.getUsername())
+        .password(user.getPassword())
+        .disabled(!user.isEnabled())
+        .authorities(AuthorityUtils.NO_AUTHORITIES)
+        .build();
   }
 
 }

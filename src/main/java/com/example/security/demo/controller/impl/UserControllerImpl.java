@@ -2,7 +2,7 @@ package com.example.security.demo.controller.impl;
 
 import com.example.security.demo.controller.UserController;
 import com.example.security.demo.dto.UserDto;
-import com.example.security.demo.entity.User;
+import com.example.security.demo.entity.UserApp;
 import com.example.security.demo.exception.UserNotFoundException;
 import com.example.security.demo.mapper.UserMapper;
 import com.example.security.demo.service.UserService;
@@ -31,7 +31,7 @@ public class UserControllerImpl implements UserController {
   @Override
   @GetMapping
   public UserDto getUser(Authentication authentication) {
-    return userMapper.toDto((User) authentication.getPrincipal());
+    return userMapper.toDto((UserApp) authentication.getPrincipal());
   }
 
   @Override
