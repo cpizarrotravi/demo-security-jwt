@@ -2,13 +2,13 @@ package com.example.security.demo.controller.impl;
 
 import com.example.security.demo.controller.UserController;
 import com.example.security.demo.dto.UserDto;
-import com.example.security.demo.entity.UserApp;
 import com.example.security.demo.exception.UserNotFoundException;
 import com.example.security.demo.mapper.UserMapper;
 import com.example.security.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,8 +30,8 @@ public class UserControllerImpl implements UserController {
 
   @Override
   @GetMapping
-  public UserDto getUser(Authentication authentication) {
-    return userMapper.toDto((UserApp) authentication.getPrincipal());
+  public UserDetails getUser(Authentication authentication) {
+    return (UserDetails) authentication.getPrincipal();
   }
 
   @Override

@@ -28,17 +28,18 @@ public class WebSecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManagerBuilder builder,
                                                  BearerTokenAuthenticationEntryPoint bearerTokenAuthenticationEntryPoint,
-                                                 CustomUserDetailsService userDetailsService, BearerTokenProvider bearerTokenProvider) throws Exception {
+                                                 BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter) throws Exception {
     http.csrf(CsrfConfigurer::disable);
     http.authorizeHttpRequests(authorize ->
         authorize.antMatchers("/actuator/**").permitAll()
             .antMatchers("/signin").permitAll()
+            .antMatchers("/signup").permitAll()
             .anyRequest().authenticated()
     );
     http.authenticationManager(builder.getOrBuild());
     http.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(bearerTokenAuthenticationEntryPoint));
     http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-    http.addFilterBefore(bearerTokenAuthenticationFilter(bearerTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
@@ -50,7 +51,9 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public AuthenticationManager authenticationManagerBean(HttpSecurity http, UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) throws Exception {
+  public AuthenticationManager authenticationManagerBean(HttpSecurity http,
+                                                         UserDetailsService userDetailsService,
+                                                         PasswordEncoder passwordEncoder) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     return authenticationManagerBuilder.build();
@@ -58,13 +61,14 @@ public class WebSecurityConfig {
 
   @Bean
   public BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter(BearerTokenProvider bearerTokenProvider,
-                                                                         UserDetailsService userDetailsService) {
+                                                                         CustomUserDetailsService userDetailsService) {
     return new BearerTokenAuthenticationFilter(bearerTokenProvider, userDetailsService);
   }
 
   @Bean
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    //return new BCryptPasswordEncoder();
   }
 
 }

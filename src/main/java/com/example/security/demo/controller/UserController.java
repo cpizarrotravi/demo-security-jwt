@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -26,7 +27,7 @@ public interface UserController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
       })
   })
-  UserDto getUser(Authentication authentication);
+  UserDetails getUser(Authentication authentication);
 
   @Operation(summary = "Patch user", description = "Update user information", tags = {"user"})
   @ApiResponses(value = {

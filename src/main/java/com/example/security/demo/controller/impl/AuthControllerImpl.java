@@ -7,8 +7,8 @@ import com.example.security.demo.dto.SignUpRequest;
 import com.example.security.demo.dto.UserDto;
 import com.example.security.demo.security.BearerTokenProvider;
 import com.example.security.demo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,13 +21,11 @@ import javax.validation.Valid;
 
 @Setter
 @RestController
+@RequiredArgsConstructor
 public class AuthControllerImpl implements AuthController {
 
-  @Autowired
   private AuthenticationManager authenticationManager;
-  @Autowired
   private BearerTokenProvider bearerTokenProvider;
-  @Autowired
   private UserService userService;
 
   @Override
